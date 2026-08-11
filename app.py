@@ -16,10 +16,12 @@ app.secret_key = os.environ.get(
 # ============================================================
 
 def get_db():
-    conn = sqlite3.connect("database.db")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATABASE = os.path.join(BASE_DIR, "database.db")
+
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
-
 
 def init_db():
     conn = get_db()
@@ -683,10 +685,10 @@ def internal_server_error(error):
 # START APPLICATION
 # ============================================================
 
+init_db()
 if __name__ == "__main__":
 
-    init_db()
-
+   
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000)),
