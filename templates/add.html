@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Add Data</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <h2>Smart Classroom</h2>
+
+        <a href="/dashboard">
+            🏠 Dashboard
+        </a>
+
+        <a href="/add">
+            ➕ Add Data
+        </a>
+
+        <a href="/timetable_page">
+            📅 Timetable
+        </a>
+
+        <a href="/logout" class="logout">
+            🚪 Logout
+        </a>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <h1>
+                Manage Classrooms & Subjects
+            </h1>
+
+        </div>
+
+
+        <!-- CLASSROOM -->
+
+        <div class="form-card">
+
+            <h2>Add Classroom</h2>
+
+            <div class="inline-form">
+
+                <input
+                    type="text"
+                    id="classroomName"
+                    placeholder="Example: CSE-A"
+                >
+
+                <button
+                    class="btn btn-add"
+                    onclick="addClassroom()">
+
+                    Add Classroom
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBJECT -->
+
+        <div class="form-card">
+
+            <h2>Add Subject</h2>
+
+            <div class="inline-form">
+
+                <input
+                    type="text"
+                    id="subjectName"
+                    placeholder="Example: DBMS"
+                >
+
+                <button
+                    class="btn btn-add"
+                    onclick="addSubject()">
+
+                    Add Subject
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CLASSROOM LIST -->
+
+        <div class="table-container">
+
+            <h2>Classrooms</h2>
+
+            <br>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="classroomTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- SUBJECT LIST -->
+
+        <div class="table-container">
+
+            <h2>Subjects</h2>
+
+            <br>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="subjectTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function addClassroom() {
+
+    const name =
+        document.getElementById(
+            "classroomName"
+        ).value.trim();
+
+    if (!name) {
+
+        alert("Enter classroom name");
+
+        return;
+
+    }
+
+
+    const response =
+        await fetch("/api/classrooms", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                name: name
+            })
+
+        });
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(data.error);
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "classroomName"
+    ).value = "";
+
+    alert("Classroom added!");
+
+    loadData();
+
+}
+
+
+async function addSubject() {
+
+    const name =
+        document.getElementById(
+            "subjectName"
+        ).value.trim();
+
+    if (!name) {
+
+        alert("Enter subject name");
+
+        return;
+
+    }
+
+
+    const response =
+        await fetch("/api/subjects", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                name: name
+            })
+
+        });
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(data.error);
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "subjectName"
+    ).value = "";
+
+    alert("Subject added!");
+
+    loadData();
+
+}
+
+
+async function loadData() {
+
+    const classroomResponse =
+        await fetch("/api/classrooms");
+
+    const classrooms =
+        await classroomResponse.json();
+
+
+    const classroomTable =
+        document.getElementById(
+            "classroomTable"
+        );
+
+    classroomTable.innerHTML = "";
+
+
+    classrooms.forEach(classroom => {
+
+        classroomTable.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${classroom.id}
+                </td>
+
+                <td>
+                    ${classroom.name}
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    const subjectResponse =
+        await fetch("/api/subjects");
+
+    const subjects =
+        await subjectResponse.json();
+
+
+    const subjectTable =
+        document.getElementById(
+            "subjectTable"
+        );
+
+    subjectTable.innerHTML = "";
+
+
+    subjects.forEach(subject => {
+
+        subjectTable.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${subject.id}
+                </td>
+
+                <td>
+                    ${subject.name}
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+loadData();
+
+</script>
+
+</body>
+
+</html>

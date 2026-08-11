@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Classroom - Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <h2>Smart Classroom</h2>
+
+        <a href="/dashboard">
+            🏠 Dashboard
+        </a>
+
+        <a href="/add">
+            ➕ Add Data
+        </a>
+
+        <a href="/timetable_page">
+            📅 Timetable
+        </a>
+
+        <a href="/logout" class="logout">
+            🚪 Logout
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    Welcome, {{ session["user"] }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>Classrooms</h3>
+
+                <div
+                    class="number"
+                    id="classroomCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Subjects</h3>
+
+                <div
+                    class="number"
+                    id="subjectCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Timetable Entries</h3>
+
+                <div
+                    class="number"
+                    id="timetableCount">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <br><br>
+
+
+        <div class="form-card">
+
+            <h2>Quick Actions</h2>
+
+            <br>
+
+            <a href="/add">
+                <button class="btn btn-add">
+                    Add Classroom / Subject
+                </button>
+            </a>
+
+            <a href="/timetable_page">
+                <button class="btn btn-generate">
+                    View Timetable
+                </button>
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function loadDashboard() {
+
+    try {
+
+        const classrooms =
+            await fetch("/api/classrooms");
+
+        const classroomData =
+            await classrooms.json();
+
+        document.getElementById(
+            "classroomCount"
+        ).textContent = classroomData.length;
+
+
+        const subjects =
+            await fetch("/api/subjects");
+
+        const subjectData =
+            await subjects.json();
+
+        document.getElementById(
+            "subjectCount"
+        ).textContent = subjectData.length;
+
+
+        const timetable =
+            await fetch("/api/timetable");
+
+        const timetableData =
+            await timetable.json();
+
+        document.getElementById(
+            "timetableCount"
+        ).textContent = timetableData.length;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Timetable</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <h2>Smart Classroom</h2>
+
+        <a href="/dashboard">
+            🏠 Dashboard
+        </a>
+
+        <a href="/add">
+            ➕ Add Data
+        </a>
+
+        <a href="/timetable_page">
+            📅 Timetable
+        </a>
+
+        <a href="/logout" class="logout">
+            🚪 Logout
+        </a>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <h1>
+                Class Timetable
+            </h1>
+
+            <div>
+
+                <button
+                    class="btn btn-generate"
+                    onclick="generateTimetable()">
+
+                    🤖 Generate Timetable
+
+                </button>
+
+
+                <button
+                    class="btn btn-delete"
+                    onclick="deleteTimetable()">
+
+                    🗑 Delete All
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Classroom</th>
+
+                        <th>Subject</th>
+
+                        <th>Day</th>
+
+                        <th>Time</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="timetableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function loadTimetable() {
+
+    try {
+
+        const response =
+            await fetch("/api/timetable");
+
+        const data =
+            await response.json();
+
+
+        const body =
+            document.getElementById(
+                "timetableBody"
+            );
+
+        body.innerHTML = "";
+
+
+        if (data.length === 0) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5"
+                        style="text-align:center">
+
+                        No timetable available.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        data.forEach(item => {
+
+            body.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${item.id}
+                    </td>
+
+                    <td>
+                        ${item.classroom}
+                    </td>
+
+                    <td>
+                        ${item.subject}
+                    </td>
+
+                    <td>
+                        ${item.day}
+                    </td>
+
+                    <td>
+                        ${item.time}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+async function generateTimetable() {
+
+    const confirmed =
+        confirm(
+            "Generate a new timetable? Existing timetable will be replaced."
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            "/api/auto_generate",
+            {
+                method: "POST"
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        alert(data.error);
+
+        return;
+
+    }
+
+
+    alert(
+        "Timetable generated successfully!"
+    );
+
+
+    loadTimetable();
+
+}
+
+
+async function deleteTimetable() {
+
+    const confirmed =
+        confirm(
+            "Delete the complete timetable?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const response =
+        await fetch(
+            "/api/delete_all",
+            {
+                method: "POST"
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    alert(data.message);
+
+
+    loadTimetable();
+
+}
+
+
+loadTimetable();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+
+<div class="login-card">
+    <h2>Verify Account</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="error">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <input name="otp" placeholder="Enter OTP" required>
+        <button class="login-btn">Verify</button>
+    </form>
+
+</div>
+
+</body>
+</html>
